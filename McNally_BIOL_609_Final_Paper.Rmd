@@ -43,7 +43,7 @@ Figure 1: Mean SST of Kiritimati through the most recent El Nino
 
 **1. General approach**
 
-The main question I am trying to answer with the development of my model is: does bleaching have an effect on lipid abundance in sampled Porites lobota coral colonies over the course of the most recent el Niño event? I hope to further dive into my model and take my main question further and investigate if sampled colonies found within higher upwelling areas show different (possibly more stable) lipid content through the event than colonies found outside those areas? 
+The main question I am trying to answer with the development of my model is: are there differences between lipid abundance through time and whether corals sampled in different months had different lipid abundances in response to bleaching? I hope to further dive into my model and take my main question further and investigate if sampled colonies found within higher upwelling areas show different (possibly more stable) lipid content through the event than colonies found outside those areas? 
 
 **2. Experimental/Sampling Design**
 
@@ -313,7 +313,7 @@ Figure 7: Conditonal distribution of k for Upwelling vs. No Upwelling
 
 **Discussion** 
 
-Fitting the model to our dataset we found that through the event there was a slight negative trend in total lipid content in all coral colonies sampled throughout the island (Figure 8). Speaking to the conditional differences between time points from our model we can say that from May 2015 to July 2015 there was really no change in lipid content with a 13% chance that samples taken in May were different from samples taken in July (Figure 5). Looking at the differences between July 2015 and March 2016 there is a 55% chance that the lipids sampled in July are different (less?) than those sampled in March 2016 (Figure 6). July 2015 to March 2016 we saw the highest temperature over a longer period (Figure 1) and higher levels of bleaching between these two time points. Experimental trials have shown that bleaching corals will show a decrease in lipid stores and with some confidence from our model we can say that natural colonies under bleaching conditiosn show a similar decrease in lipid content (Grottoli et al. 2006; Grottoli et al. 2014). 
+Fitting the model to our dataset we found that through the event there was a slight negative trend in total lipid content in all coral colonies sampled throughout the island (Figure 8). Speaking to the conditional differences between time points from our model we can say that from May 2015 to July 2015 there was really no change in lipid content with a 13% chance that samples taken in May were different from samples taken in July (Figure 5). Looking at the differences between July 2015 and March 2016 there is a 55% chance that the lipids sampled in July are different than those sampled in March 2016 (Figure 6). From July 2015 to March 2016 we saw the highest temperature over a longer period (Figure 1) and higher levels of bleaching between these two time points. Experimental trials have shown that bleaching corals will show a decrease in lipid stores and with confidence from our model we can say that natural colonies under bleaching conditions show a similar decrease in lipid content (Grottoli et al. 2006; Grottoli et al. 2014). 
 
 ```{r, cache=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(data =lipids, mapping = aes(x = Date_Collected, 
@@ -336,7 +336,6 @@ ggplot(data =lipids, mapping = aes(x = Upwelling,
         y = "log(Total lipid (μg/mg))")
 ```
 Figure 9: Log total lipids of all coral colonies sampled in upwelling and non upwelling zones 
-
 
 
 **CONCLUSIONS**
