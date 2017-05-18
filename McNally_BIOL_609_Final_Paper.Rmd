@@ -1,0 +1,420 @@
+---
+title: "Investigating coral fat stores during the intense 2015-2016 El Niño-induced bleaching event on Kiritimati Island"
+author: "Sean McNally"
+output: word_document
+mainfont: Times New Roman
+fontsize: 12pt
+---
+
+**INTRODUCTION**
+
+The recent El Niño event in the Pacific (2015-2016) was one of the strongest on record and caused exceptionally warm waters centered over Kiritimati in the Republic of Kiribati (Normile 2016) (Figure 1). Warm temperatures are particularly concerning for corals, which form the foundation of tropical reef ecosystems including those that build atoll nations such as Kiribati. Rising seawater temperatures cause coral bleaching, during which corals expel their symbiotic algae to avoid harm from oxygen radicals produced by the algae during light and temperature stress (Brown and Dunne 2016). Between 90-95% of all corals were bleached at Kiritimati during this unprecedented bleaching event. As symbionts are lost, so too is the nutrition that corals rely on to survive. Prolonged bleaching can lead to coral mortality, yet death is not a foregone conclusion. 
+
+```{r, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE}
+temp <- read.csv("Temp.csv")
+
+temp2 <- temp %>%
+  group_by(time) %>%
+  summarize(n=n(), mn = mean(sst))
+```
+
+Previous experimental work has shown that corals with higher fat stores are more resilient to heat stress (Grottoli et al. 2004; Schoepf et al. 2015), and that corals fed with zooplankton are also more resilient (Borell et al. 2008). These results all stem from an experimental view and so far, no work has been done tracking changes in coral lipid stores through a natural bleaching event. The work presented takes advantage of exceptional circumstances to address this gap of knowledge. 
+
+Here we assessed Porites coral energy stores (amounts of lipids) from individually tagged coral colonies before and during this bleaching event. Specifically, investigating the differences between lipid abundance through time and whether corals sampled in different months had different lipid abundances in response to bleaching. Kiritimati has a significant spatial variability in likely heterotrophy due to differences in upwelling strength around the island (see Chl-a maps in Carilli & Walsh 2012; Wood et al. 2015). And with this we expect that corals with higher lipid content prior to bleaching, and/or better access to food (higher upwelling) will better survive through this event and go on to recover. 
+
+```{r, results="hide", cache=TRUE, echo=FALSE, out.width = "600px"}
+ggplot(temp2, mapping = aes(x = time, y = mn, group = 1)) +
+  geom_point() +
+  geom_line() +
+  scale_x_discrete(labels = c("Aug-15", "Sep-14", "Oct-14", "Nov-14", "Dec-14", "Jan-15", "Feb-15", "Mar-15", "Apr-15", "May-15", "Jun-15", "Jul-15", "Aug-15", "Sep-15", "Oct-15", "Nov-15", "Dec-15", "Jan-16", "Feb-16", "Mar-16")) +
+  geom_hline(yintercept=c(29.0), color="red") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text.x = element_text(angle = -45, vjust =.5)) +
+  labs( x = "Date Collected", 
+        y = "Mean Sea Surface Temperature (C)")
+
+```
+Figure 1: Mean SST of Kiritimati through the most recent El Nino 
+
+
+**METHODS**
+
+**1. General approach**
+
+The main question I am trying to answer with the development of my model is: does bleaching have an effect on lipid abundance in sampled Porites lobota coral colonies over the course of the most recent el Niño event? I hope to further dive into my model and take my main question further and investigate if sampled colonies found within higher upwelling areas show different (possibly more stable) lipid content through the event than colonies found outside those areas? 
+
+**2. Experimental/Sampling Design**
+
+*Site descriptions* 
+
+The Baum lab group determined 32 focal monitoring sites around Kirtimati in 2014 (Baum/Clarr, Unpublished). At each site, a benthic community was identified for ecological surveying and labeled with GPS coordinates for continuous longitudinal monitoring. Within each site, two 25 meter transect lines, were mapped out with 10 meter separation between the two sampling tracks, for a total of 60 meters. Along each transect line focal individual coral colonies were identified and tagged. For this specific study, the focal species was the common hermatypic coral Porites lobata. Identifiable tags labeled with numeric values were zip tied to the reef landscape within a few centimeters of the colony of interest. 
+
+For the purpose of this study, 10 out of the 32 monitored sites were used to draw conclusions and were further grouped based off of their relative location in our proposed upwelling zones. Colony monitoring and site specifics for this analysis were also determined based off of sample availability across time, which was variable due to access to the site upon each field season (i.e. some sites and individuals were not visited or sampled every field season due to weather and other constraints).
+
+*Coral tissue sample collection* 
+
+Corals were tagged and sampled within 5 meters of the deployed transect, with at least 5 meter spacing between coral colonies. A woodcarving chisel was used to obtain a small coral tissue sample between 0.5-2ml with minimal coral skeleton collected. The sample was placed into a pre-labeled whirl-pak with reef water. Upon arrival at the surface samples were placed in a cooler on ice until processing was completed on shore. Approximately 8-10 coral colonies of the focal species, Porites lobata, were tagged and sampled from each site before the onset of the most recent El Nino event in August 2014. Samples were subsequently taken from the same-tagged colony during the start of the El Nino event (May 2015), the peak (July 2015), and at the tail end (March 2016). Replicates from tagged colonies were sampled across time assuming they survived the bleaching event. If a tagged colony was observed to be dead and or gone, upon sampling, a new surviving colony along the transect was sampled to continue monitoring survivorship and recovery of the site. Samples were taken from the same general location on the coral colony. All colonies sampled were of the same size class (i.e. not recruits). 
+
+*Photo collection/analysis*
+
+Prior to sampling, a ruler was placed next to the colony and a photo was taken of the whole coral colony. Photo analysis software (xxx) was used in which a bleaching proportion level was assigned to tagged individual coral colonies through time. Bleaching proportion is characterized as a ‘1’ if there is partial/spotty/patchy bleaching (i.e. patches smaller than 5cm); ‘2’ large patches (i.e. greater than 5cm but not severe bleaching); ‘3’ severe or complete bleaching (i.e. ~80% of the coral is bleached). If not applicable (i.e. its not bleaching) “none” was assigned.
+
+
+**3. Analytic Approach**
+
+A variable slope intercept mixed model with partial pooling in a Bayesian framework is appropriate to address my outlined question (Figure 2). Every site is similar to the other, but with some variation, which is where partial pooling is appropriate. Not only does partial pooling allow me to work under this assumption but also allows my model to share information across sites and is helpful with my unbalanced sampling. 
+
+In addition using a Bayesian approach mixed model allows me the ability to deal with observational and numeric values, incorporate priors, and sample from my posterior distribution (Figure 2). This allows me to generate projections of lipid store dynamics over the sampled time period with bleaching level as the primary input. 
+
+This model will only be applicable to the bleaching event (Figure 2). And is only meant to be used as a tool in projecting lipid store dynamics within the hierarchal sample design and not for projecting lipid stores in the future (i.e. recovery).  A Bayesian structure (MCMC and hierarchal mixed model) allows me the ability to account for non-independence in my sampling, specifically within a random variable slope model. In order to build an informative model I worked under the assumption that generally random effects are normally distributed with a mean of 0 and some variation (sigma). Meaning that my random slopes start at the same level but the relationship between the predictor and response differed between the two. I set my priors for my fixed effects as weakly informative priors, which is considered normal (0,10) (Figure 2). 
+
+```{r, echo=TRUE, cache=TRUE, message=FALSE, warning=FALSE}
+lipid_mod_13<- alist(
+  #likelihood
+  log_lipids ~ dnorm(mu, sigma),
+  
+  #DGP
+  mu <- a_bar + a_area[area_idx] + a_time[time_idx] + a_colony[colony_idx] + (b_bar_upwelling + b_upwelling[upwelling_idx] + b_time[time_idx]) + (b_bar_colony + b_colony[colony_idx] + b_time[time_idx])*bleaching_level,
+  
+  #Random effects
+  a_area[area_idx] ~ dnorm(0, sigma_area),
+  c(a_colony,b_colony)[colony_idx] ~ dmvnormNC(sigma_colony, Rho_colony),
+  
+  #priors
+  a_bar ~ dnorm(0,10),
+  b_bar_upwelling ~ dnorm(0,10),
+  b_bar_colony ~ dnorm(0,10),
+  a_time[time_idx] ~ dnorm(0, 10),
+  b_upwelling[upwelling_idx] ~ dnorm(0,10),
+  b_time[time_idx] ~ dnorm(0,10),
+  
+  sigma ~ dcauchy(0,2),
+  sigma_area ~ dcauchy(0,2),
+  sigma_time ~ dcauchy(0,2),
+  sigma_colony ~ dcauchy(0,2),
+  Rho_colony ~ dlkjcorr(2)
+)
+```
+Figure 2: Full Model 
+
+Lipids were log transformed (Figure 2). Lipids storage is biologically considered a growth function/process and log transformation is acceptable. Time is considered categorical because data was sampled infrequently over unequal intervals under different conditions.  All three dates have different confounding factors applied to them at each time and thus, if I allow time to be a random effect I would be violating my interchangeability assumption and I have to allow time to be a fixed effect within my model to account for that (Figure 2).
+
+Within my model I also allow for random component of colony to have co-varying slopes and intercepts: I removed temperature because I realized temperature does not really affect lipid content and bleaching should really be considered the main predictor (Figure 2). I also removed temperature because it is also technically not appropriate to consider temperature a predictor of bleaching. 
+
+Within this model I have removed area as a fixed effect and kept it as a random effect only (Figure 2). I added upwelling as a fixed effect in order to answer my secondary question. I am considering area to be random because I expect with each site there should still be some variation. I added the factor of upwelling (yes or no) without area and kept area random because I expect all the areas within upwelling zones to be similar but not identical and have some variation (Figure 2). 
+
+Area and colony are random effects with colony having a co-varying random slope and intercept interaction with bleaching level (Figure 1). This model allows me to answer my big question and with upwelling as a fixed effect I am able to also answer my secondary question.  The random effects applied within my model are just noise and I am really just interested in the variability of lipid storage over the course of the event and if colonies found within proposed upwelling zones had higher lipid content than those found outside of the proposed upwelling zones. **(I would really like to improve on my model and be able to speak to effects of bleaching (i.e. bleaching level) on lipid storage in different coral colonies at different sites through the most recent El Nino. I really want to better understand how to simulate my sampled coral colonies and draw stronger inferences to answer this question. Does this mean I have to add bleaching_level as a fixed effect or is this a whole other model? I am wayyyyyyy confused after our last meeting on Tuesday and the questions I had in my email on Wednesday)**
+
+**Results**
+
+```{r prep, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(lme4)
+library(forcats)
+library(lsmeans)
+library(car)
+library(broom)
+library(lme4)
+library(RLRsim)
+library(sjPlot)
+library(nlme)
+library(knitr)
+library(rethinking)
+
+lipids <- read.csv("lipid_mod_bayes.csv") %>%
+  na.omit(lipids) %>%
+  mutate(Date_Collected = fct_inorder(Date_Collected)) %>%
+  mutate(colony_idx = as.numeric(Colony)) %>%
+  mutate(time_idx = as.numeric(Date_Collected)) %>%
+  mutate(area_idx = as.numeric(Area)) %>%
+  mutate(bleaching_idx = as.numeric(bleaching_level)) %>%
+  mutate(upwelling_idx = as.numeric(Upwelling)-1)
+
+
+lipids$log_lipids <- log(lipids$Total_Energetic_Lipid)
+
+lipid_mod_14<- alist(
+  #likelihood
+  log_lipids ~ dnorm(mu, sigma),
+  
+  #DGP
+  mu <- a_bar + a_area[area_idx] + a_colony[colony_idx] + (b_bar_upwelling + b_upwelling[upwelling_idx] + b_time[time_idx]) + (b_bar_colony + b_colony[colony_idx] + b_time[time_idx])*bleaching_level,
+  
+  #Random effects
+  a_area[area_idx] ~ dnorm(0, sigma_area),
+  c(a_colony,b_colony)[colony_idx] ~ dmvnormNC(sigma_colony, Rho_colony),
+  
+  #priors
+  a_bar ~ dnorm(0,10),
+  b_bar_upwelling ~ dnorm(0,10),
+  b_bar_colony ~ dnorm(0,10),
+  b_upwelling[upwelling_idx] ~ dnorm(0,10),
+  b_time[time_idx] ~ dnorm(0,10),
+  
+  sigma ~ dcauchy(0,2),
+  sigma_area ~ dcauchy(0,2),
+  sigma_time ~ dcauchy(0,2),
+  sigma_colony ~ dcauchy(0,2),
+  Rho_colony ~ dlkjcorr(2)
+)
+
+lipid_mod_15<- alist(
+  #likelihood
+  log_lipids ~ dnorm(mu, sigma),
+  
+  #DGP
+  mu <- a_bar + a_colony[colony_idx] + (b_bar_upwelling + b_upwelling[upwelling_idx] + b_time[time_idx]) + (b_bar_colony + b_colony[colony_idx] + b_time[time_idx])*bleaching_level,
+  
+  #Random effects
+  c(a_colony,b_colony)[colony_idx] ~ dmvnormNC(sigma_colony, Rho_colony),
+  
+  #priors
+  a_bar ~ dnorm(0,10),
+  b_bar_upwelling ~ dnorm(0,10),
+  b_bar_colony ~ dnorm(0,10),
+  b_upwelling[upwelling_idx] ~ dnorm(0,10),
+  b_time[time_idx] ~ dnorm(0,10),
+  
+  sigma ~ dcauchy(0,2),
+  sigma_area ~ dcauchy(0,2),
+  sigma_time ~ dcauchy(0,2),
+  sigma_colony ~ dcauchy(0,2),
+  Rho_colony ~ dlkjcorr(2)
+)
+
+lipid_mod_16<- alist(
+  #likelihood
+  log_lipids ~ dnorm(mu, sigma),
+  
+  #DGP
+  mu <- a_bar + a_time[time_idx] + a_colony[colony_idx] + (b_bar_upwelling + b_upwelling[upwelling_idx] + b_time[time_idx]) + (b_bar_colony + b_colony[colony_idx] + b_time[time_idx])*bleaching_level,
+  
+  #Random effects
+  c(a_colony,b_colony)[colony_idx] ~ dmvnormNC(sigma_colony, Rho_colony),
+  
+  #priors
+  a_bar ~ dnorm(0,10),
+  b_bar_upwelling ~ dnorm(0,10),
+  b_bar_colony ~ dnorm(0,10),
+  a_time[time_idx] ~ dnorm(0, 10),
+  b_upwelling[upwelling_idx] ~ dnorm(0,10),
+  b_time[time_idx] ~ dnorm(0,10),
+  
+  sigma ~ dcauchy(0,2),
+  sigma_area ~ dcauchy(0,2),
+  sigma_time ~ dcauchy(0,2),
+  sigma_colony ~ dcauchy(0,2),
+  Rho_colony ~ dlkjcorr(2)
+)
+
+```
+
+```{r, results="hide", cache=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+fit_mod_13 <- map2stan(lipid_mod_13, data=lipids, iter=4000, chains=3, warmup=2000)
+```
+
+```{r, results="hide", cache=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+fit_mod_14 <- map2stan(lipid_mod_14, data=lipids, iter=4000, chains=3, warmup=2000)
+```
+
+```{r, results="hide", cache=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+fit_mod_15 <- map2stan(lipid_mod_15, data=lipids, iter=4000, chains=3, warmup=2000)
+```
+
+```{r, results="hide", cache=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+fit_mod_16 <- map2stan(lipid_mod_16, data=lipids, iter=4000, chains=3, warmup=2000)
+```
+
+During model development I set the goals of my model early in order for it to answer my question. Once my model was created I investigated competing random effect structures and chose what I thought to be the best model for the system I am studying, fit_mod_14 (Figure 3). This model when compared to my other models with competing random effect structures and my full model had the lowest WAIC and the most weight (Table 1, Figure 4). The final model chosen (fit_mod_14) is very similar to my orginal model with one main difference. In the new fit_mod_14 I removed time as a random effect and is now only in the model as a fixed effect with only a variable slope (removed intercept function). This new model had similar postcheck results (SI Figure 1) and convergence (SI Figure 2) when compared with the other competiting random effects models. 
+
+```{r, echo=TRUE, cache=TRUE, message=FALSE, warning=FALSE}
+lipid_mod_14<- alist(
+  #likelihood
+  log_lipids ~ dnorm(mu, sigma),
+  
+  #DGP
+  mu <- a_bar + a_area[area_idx] + a_colony[colony_idx] + (b_bar_upwelling + b_upwelling[upwelling_idx] + b_time[time_idx]) + (b_bar_colony + b_colony[colony_idx] + b_time[time_idx])*bleaching_level,
+  
+  #Random effects
+  a_area[area_idx] ~ dnorm(0, sigma_area),
+  c(a_colony,b_colony)[colony_idx] ~ dmvnormNC(sigma_colony, Rho_colony),
+  
+  #priors
+  a_bar ~ dnorm(0,10),
+  b_bar_upwelling ~ dnorm(0,10),
+  b_bar_colony ~ dnorm(0,10),
+  b_upwelling[upwelling_idx] ~ dnorm(0,10),
+  b_time[time_idx] ~ dnorm(0,10),
+  
+  sigma ~ dcauchy(0,2),
+  sigma_area ~ dcauchy(0,2),
+  sigma_time ~ dcauchy(0,2),
+  sigma_colony ~ dcauchy(0,2),
+  Rho_colony ~ dlkjcorr(2)
+)
+```
+Figure 3: Final model with time as fixed effect with a variable slope  
+
+```{r, cache=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+compare(fit_mod_13, fit_mod_14, fit_mod_15, fit_mod_16)
+```
+Table 1: WAIC of evaluated models 
+
+```{r, cache=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+plot(compare(fit_mod_13, fit_mod_14, fit_mod_15, fit_mod_16))
+```
+Figure 4: Plotted WAIC of evluated models 
+
+I am most interested in knowing the difference between points rather than how it’s changed over time (mainly because I am considering time categorically). With this idea I extracted samples from my chosen model (fit_mod_14) and looked to answer my proposed questions by examining the conditional differences between points using the conditional distribution of K. With this approach I am able to examine and speak to the differences from my extracted samples obtained from my model (SI Figure 4,5). By examining the distrubtions of my calculated conditional differences I am able to better speak to the difference or indifference across my samples, similar to the way a pvalue is used under a frequentist approach (Figure 5,6,7). 
+
+```{r, cache=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+post <- extract.samples(fit_mod_14)
+
+time_df <- as.data.frame(post$b_time)
+names(time_df) <- levels(lipids$Date_Collected)
+
+upwelling_df <- as.data.frame(post$b_upwelling)
+names(upwelling_df) <- levels(lipids$Upwelling)
+
+#conditional differnce
+
+###Is May different than July?
+May_v_July <- post$b_time[,1] - post$b_time[,2]
+
+###Is July different than March?
+July_v_March <- post$b_time[,2] - post$b_time[,3] 
+
+#how to do this vary by area? Upwelling vs No Upwelling
+Upwelling_v_None <- (post$b_upwelling[,2] - post$b_upwelling[,1])
+```
+
+```{r, cache=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+plot(density(May_v_July))
+1-sum(May_v_July<0)/length(May_v_July)
+```
+Figure 5: Conditonal distribution of k for May vs. July 
+
+```{r, cache=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+plot(density(July_v_March))
+1-sum(July_v_March<0)/length(July_v_March)
+```
+Figure 6: Conditonal distribution of k for July vs. March
+
+```{r, cache=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+plot(density(Upwelling_v_None))
+1-sum(Upwelling_v_None<0)/length(Upwelling_v_None)
+```
+Figure 7: Conditonal distribution of k for Upwelling vs. No Upwelling
+
+
+**Discussion** 
+
+Fitting the model to our dataset we found that through the event there was a slight negative trend in total lipid content in all coral colonies sampled throughout the island (Figure 8). Speaking to the conditional differences between time points from our model we can say that from May 2015 to July 2015 there was really no change in lipid content with a 13% chance that samples taken in May were different from samples taken in July (Figure 5). Looking at the differences between July 2015 and March 2016 there is a 55% chance that the lipids sampled in July are different (less?) than those sampled in March 2016 (Figure 6). July 2015 to March 2016 we saw the highest temperature over a longer period (Figure 1) and higher levels of bleaching between these two time points. Experimental trials have shown that bleaching corals will show a decrease in lipid stores and with some confidence from our model we can say that natural colonies under bleaching conditiosn show a similar decrease in lipid content (Grottoli et al. 2006; Grottoli et al. 2014). 
+
+```{r, cache=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(data =lipids, mapping = aes(x = Date_Collected, 
+                                   y = log_lipids)) +
+  geom_boxplot() +
+  theme_bw(base_size=17) +
+  labs( x = "Date Collected", 
+        y = "log(Total lipid (μg/mg))")
+```
+Figure 8: Log total lipids of all coral colonies sampled over the course of the most recent El Nino event
+
+Looking at differences between samples taken from the proposed upwelling sites to sites away from the northwest side of the island there is a 76% chance that the lipid content sampled is different (Figure 9). It has been proposed that corals that have this ability to successfuly switch from acquiring energy from symbiotic algae photosynthesis (autotrophy) to eating zooplankton from the water column (heterotrophy) may be better suited to survive bleaching thus, making them more resilient (Grottoli et al. 2006, Connoly et al. 2012). Carilli and Walsh found through satellite-derived chlorophyll-a analysis that higher productivity waters around the island are found on the northwest side. Carilli and Walsh hypothesize that this high level of productivity is most likely primarily driven by island-wake upwelling, which may carry deep, nutrient-rich waters to the surface (2012). This higher productivity may lead to more zooplankton rich waters, which corals in turn can actively feed on, potentially allowing them to store fat and continue growth in the absence of *Symbiodinium* and could by why we are seeing a difference in lipid content between upwelling and no upwelling zones (Connolly et al. 2012). 
+
+```{r, cache=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(data =lipids, mapping = aes(x = Upwelling, 
+                                   y = log_lipids)) +
+  geom_boxplot() +
+  theme_bw(base_size=17) +
+  labs( x = "Date Collected", 
+        y = "log(Total lipid (μg/mg))")
+```
+Figure 9: Log total lipids of all coral colonies sampled in upwelling and non upwelling zones 
+
+
+
+**CONCLUSIONS**
+
+I really hope to continue to take this model a lot further in examining my sampled data for publication in the Fall. With the knowledge and experience I have from taking this class I am in a much better position to analyze my data set with a Bayesian mindset. I am still struggling using my model to help answer some of my questions. I figured out how to use my model to examine conditional differences between time points and sites (which I think my interpretation is correct??) but I am still really struggling with some of my other questions. It would be awesome to use my model the way we discussed on Tuesday to look at colony differences and changing in bleaching level with lipid content and how that changes at the site level. I looked at the prediction chapter and lecture and I am really struggling with differences between ggplot and rethinking. I extracted my samples and then created a data prediction file using crossing and then prediction P and PI but I am struggling with what I do next. I am not sure if my model is correct in the way it laid out currently in order to further address my questions.  
+
+
+
+
+**REFERENCES**
+
+Borell, E. M., Yuliantri, A. R., Bischof, K., & Richter, C. (2008). The effect of heterotrophy on photosynthesis and tissue composition of two scleractinian corals under elevated temperature. Journal of Experimental Marine Biology and Ecology, 364(2), 116-123.
+
+Brown BE, Dunne RP. (2016). Coral Bleaching. Woodley/Diseases of Coral Diseases of Coral. 266-83.
+
+Carilli, J., & Walsh, S. (2012). Benthic foraminiferal assemblages from Kiritimati (Christmas) Island indicate human-mediated nutrification has occurred over the scale of decades. Marine Ecology Progress Series, 456, 87-99.
+
+Carilli, J., Donner, S. D., & Hartmann, A. C. (2012). Historical temperature variability affects coral response to heat stress. PLoS One, 7(3), e34418.
+
+Connolly SR, Lopez-Yglesias MA, Anthony KRN. (2012). Food Availability Promotes Rapid Recovery from Thermal Stress in a Scleractinian Coral. *Coral Reefs*. 31.4: 951-60. 
+
+Grottoli, A. G., Rodrigues, L. J., & Juarez, C. (2004). Lipids and stable carbon isotopes in two species of Hawaiian corals, Porites compressa and Montipora verrucosa, following a bleaching event. Marine Biology, 145(3), 621-631.
+
+Grottoli AG, Rodrigues LJ, Palardy JE. (2006). Heterotrophic plasticity and resilience in bleached corals. *Nature*. 440(7088): 1186-1189.
+
+Normile D. (2016). El Niño’s Warmth Devastating Reefs Worldwide. Science. 
+
+Schoepf, V., Grottoli, A. G., Levas, S. J., Aschaffenburg, M. D., Baumann, J. H., Matsui, Y., & Warner, M. E. (2015). Annual coral bleaching and the long-term recovery capacity of coral. Proceedings of the Royal Society B, 282(1819), 1887. 
+
+Wood, C. L., Baum, J. K., Reddy, S. M., Trebilco, R., Sandin, S. A., Zgliczynski, B. J., Briggs, A. A. & Micheli, F. (2015). Productivity and fishing pressure drive variability in fish parasite assemblages of the Line Islands, equatorial Pacific. Ecology, 96(5), 1383-1398.
+
+**Supplementary**
+```{r, results="hide", cache=TRUE, echo=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
+postcheck(fit_mod_14)
+```
+Supporting Information Figure 1: Posterior Validation Check (Model Evaluation)
+
+```{r, results="hide", cache=TRUE, echo=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
+plot(fit_mod_14) 
+```
+Supporting Information Figure 2: Convergence (Model Evaluation)
+
+```{r, results="hide", cache=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+base_plot <- ggplot(data =lipids, mapping = aes(x = Date_Collected, 
+                                                y = log_lipids)) +
+  geom_point() +
+  theme_bw(base_size=17) +
+  labs( x = "Date Collected", 
+        y = "log(Total lipid (μg/mg))")
+
+time_df_est <- time_df %>%
+  gather(Date_Collected, log_lipids) %>%
+  group_by(Date_Collected) %>%
+  mutate(Pot="z")
+
+base_plot +
+  geom_point() +
+  geom_point(data = time_df_est)
+```
+Supporting Information Figure 3: Extracted Samples coverage by Date Collected 
+
+
+```{r, results="hide", cache=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+base_plot_2 <- ggplot(data =lipids, mapping = aes(x = Upwelling, 
+                                                  y = log_lipids)) +
+  geom_point() +
+  theme_bw(base_size=17) +
+  labs( x = "Date Collected", 
+        y = "log(Total lipid (μg/mg))")
+
+
+upwelling_df_est <- upwelling_df %>%
+  gather(Upwelling, log_lipids) %>%
+  group_by(Upwelling) %>%
+  mutate(Pot="z")
+
+base_plot_2 +
+  geom_point() +
+  geom_point(data = upwelling_df_est)
+```
+Supporting Information Figure 4: Extracted Sample coverage by Upwelling
